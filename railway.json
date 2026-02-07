@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "cd flower-backend && mvn clean install -DskipTests"
+  },
+  "deploy": {
+    "startCommand": "cd flower-backend && java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/flower-designer-1.0.0.jar",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
