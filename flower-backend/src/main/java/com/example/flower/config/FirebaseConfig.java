@@ -10,13 +10,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${firebase.config.path}")
+    @Value("${firebase.config.path:src/main/resources/firebase-service-account.json}")
     private String firebaseConfigPath;
 
     @Value("${firebase.database.url}")
@@ -25,19 +27,37 @@ public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
         try {
-            FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath);
+            FirebaseOptions options;
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl(databaseUrl)
-                    .build();
+            // Railway ortamında FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable'ı varsa onu kullan
+            String base64Credentials = System.getenv("FIREBASE_SERVICE_ACCOUNT_BASE64");
+
+            if (base64Credentials != null && !base64Credentials.isEmpty()) {
+                System.out.println("Firebase: Environment variable'dan kimlik yükleniyor...");
+                byte[] decoded = Base64.getDecoder().decode(base64Credentials);
+                GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(decoded));
+
+                options = FirebaseOptions.builder()
+                        .setCredentials(credentials)
+                        .setDatabaseUrl(databaseUrl)
+                        .build();
+            } else {
+                System.out.println("Firebase: Local JSON dosyasından kimlik yükleniyor...");
+                FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath);
+
+                options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl(databaseUrl)
+                        .build();
+            }
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                System.out.println("Firebase başarıyla başlatıldı!");
+                System.out.println("✅ Firebase başarıyla başlatıldı!");
             }
+
         } catch (IOException e) {
-            System.err.println("Firebase başlatma hatası: " + e.getMessage());
+            System.err.println("❌ Firebase başlatma hatası: " + e.getMessage());
             e.printStackTrace();
         }
     }
