@@ -1,0 +1,38 @@
+# === FRONTEND ===
+flower-frontend/node_modules/
+flower-frontend/build/
+flower-frontend/dist/
+flower-frontend/.env
+flower-frontend/.env.local
+flower-frontend/.env.*.local
+
+# === BACKEND ===
+flower-backend/target/
+flower-backend/logs/
+flower-backend/*.log
+flower-backend/*.out
+flower-backend/.idea/
+flower-backend/.vscode/
+flower-backend/*.iml
+flower-backend/firebase-service-account.json
+
+application.properties
+firebase-service-account.json
+
+# === COMMON ===
+.DS_Store
+Thumbs.db
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.log
+*.out
+*.tmp
+
+# === SYSTEM ===
+.env
+.idea/
+.vscode/
+*.swp
