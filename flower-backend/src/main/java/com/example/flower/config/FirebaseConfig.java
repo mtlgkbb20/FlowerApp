@@ -21,9 +21,6 @@ public class FirebaseConfig {
     @Value("${firebase.config.path:src/main/resources/firebase-service-account.json}")
     private String firebaseConfigPath;
 
-    @Value("${firebase.database.url}")
-    private String databaseUrl;
-
     @PostConstruct
     public void initialize() {
         try {
@@ -39,7 +36,6 @@ public class FirebaseConfig {
 
                 options = FirebaseOptions.builder()
                         .setCredentials(credentials)
-                        .setDatabaseUrl(databaseUrl)
                         .build();
             } else {
                 System.out.println("Firebase: Local JSON dosyasından kimlik yükleniyor...");
@@ -47,7 +43,6 @@ public class FirebaseConfig {
 
                 options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                        .setDatabaseUrl(databaseUrl)
                         .build();
             }
 
