@@ -40,7 +40,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/", "/index.html", "/static/**").permitAll()
+                        // Public API endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // React static files and routes
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/manifest.json",
+                                "/logo192.png",
+                                "/logo512.png",
+                                "/static/**",
+                                // 👇 React Router paths
+                                "/register",
+                                "/login",
+                                "/dashboard",
+                                "/flower-config",
+                                "/image-generation"
+                        ).permitAll()
+                        // Other requests need authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
